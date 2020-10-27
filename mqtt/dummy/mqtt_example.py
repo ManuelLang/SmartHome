@@ -1,7 +1,10 @@
+#!/usr/bin/python
+
 import paho.mqtt.client as mqtt
 import datetime
+from gpiozero import LED, Button
 
-class MySensorsMqttClient():
+class MySensorsMqttClient:
     """
     usage:
     python3 mqtt_exemple.py
@@ -13,6 +16,10 @@ class MySensorsMqttClient():
         self.username = username
         self.password = password
         self.topic = '#'
+        self.led = LED(17)
+        self.button = Button(2)
+        self.button.when_pressed = self.notify("homeassistant/bedroom/switch1/set", "ON")
+        self.button.when_released = self.notify("homeassistant/bedroom/switch1/set", "OFF")
 
     # Define event callbacks
     def on_connect(self, client, obj, flags, rc):
@@ -26,8 +33,17 @@ class MySensorsMqttClient():
         client.subscribe(self.topic, 0)
 
     def on_message(self, client, userdata, msg):
-        if msg.payload:
-            print("{} {} {} ".format(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), msg.topic, msg.payload.decode("utf-8")))
+        mqtt_topic = msg.topic
+        payload = msg.payload.decode("utf-8") if msg.payload else ""
+        print("{} {} {} ".format(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), ))
+        if mqtt_topic == "homeassistant/bedroom/light1/set":
+            new_val = str(payload).upper()
+            self.led.on() if (payload == "ON" or payload == "1") else self.led.off()
+
+    def notify(sefl, mqtt_topic, new_val):
+        new_val = str(new_val).upper()
+        new_val = "ON" if (new_val == "ON" or new_val == "1") else "OFF"
+        result = client.publish(mqtt_topic, new_val)
 
     def on_publish(self, mosq, obj, mid):
         print("mid: " + str(mid))
@@ -63,5 +79,5 @@ class MySensorsMqttClient():
             rc = client.loop()
         print("rc: " + str(rc))
 
-client = MySensorsMqttClient(url='127.0.0.1', port=1883, username='homeassistant', password='****')
+client = MySensorsMqttClient(url='127.0.0.1', port=1883, username='sa-ha', password='dummy')
 client.listen()

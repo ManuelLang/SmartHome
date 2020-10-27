@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  mqtt_server:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    restart: always
+    network_mode: host
+    ports:
+      - "1883:1883"
+  homeassistant:
+    build: .
+    container_name: home-assistant
+    image: homeassistant/home-assistant:stable
+    volumes:
+      - ./hassconfig/:/config
+    environment:
+      - TZ=Europe/Paris
+      - DISABLE_JEMALLOC=true
+    restart: always
+    network_mode: host
+    ports:
+      - "8123:8123"
+    depends_on:
+      - "mqtt_server"

@@ -21,10 +21,14 @@ frontend:
 config:
 
 http:
-  # Uncomment this to add a password (recommended!)
-  # api_password: PASSWORD
-  # Uncomment this if you are using SSL or running in Docker etc
-  # base_url: example.duckdns.org:8123
+  server_host: 127.0.0.1
+  server_port: 8123
+  cors_allowed_origins:
+    - https://google.com
+    - https://www.home-assistant.io
+  use_x_forwarded_for: true
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
 
 # Checks for available updates
 # Note: This component will send some information about your system to
@@ -55,9 +59,9 @@ logger:
 mqtt:
   broker: 127.0.0.1
   port: 1883
-  client_id: ha
-  username: homeassistant
-  password: ****
+  client_id: hass
+  username: sa-ha
+  password: dummy
   discovery: true
   discovery_prefix: homeassistant
 
@@ -67,7 +71,6 @@ sun:
 
 # Weather Prediction
 sensor:
-  - platform: yr
   - platform: random
   - platform: mqtt
     name: 'Room Humidity'
@@ -75,11 +78,11 @@ sensor:
   - platform: mqtt
     state_topic: 'mysensors-out/122/1/1/0/0'
     name: 'Temperature'
-    unit_of_measurment: '°C'
+    unit_of_measurement: '°C'
   - platform: mqtt
     state_topic: 'mysensors-out/122/0/1/0/1'
     name: 'Humidity'
-    unit_of_measurment: '%'
+    unit_of_measurement: '%'
 
 binary_sensor:
   - platform: mqtt
@@ -102,7 +105,7 @@ mysensors:
 
 # Text to speech
 tts:
-  platform: google
+  - platform: google_translate
 
-group: !include groups.yaml
-automation: !include automations.yaml
+#group: !include groups.yaml
+#automation: !include automations.yaml

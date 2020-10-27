@@ -1,0 +1,56 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+mqtt:
+  broker: 127.0.0.1
+  port: 1883
+  username: sa-ha
+  password: dummy
+  client_id: hass
+  discovery: true
+  discovery_prefix: homeassistant
+
+switch:
+  - platform: mqtt
+    name: "Bedroom Switch"
+    command_topic: "homeassistant/bedroom/switch1/set"
+    state_topic: "homeassistant/bedroom/switch1/set"
+    availability_topic: "homeassistant/bedroom/switch1/availability"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    optimistic: false
+    qos: 0
+    retain: true
+
+light:
+  - platform: mqtt
+    name: "Bedroom Light"
+    command_topic: "homeassistant/bedroom/light1/set"
+    state_topic: "homeassistant/bedroom/light1/set"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    retain: true
+
+device_tracker:
+  - platform: owntracks
+    max_gps_accuracy: 200
+    waypoints: true
+    mqtt_topic: "owntracks/#"
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml

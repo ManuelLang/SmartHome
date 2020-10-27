@@ -1,4 +1,4 @@
-python3 ~/SmartHome/mqtt_exemple.py
+python3 ~/scripts/mqtt_exemple.py
 
 sudo systemctl status mysgw.service -l
 
