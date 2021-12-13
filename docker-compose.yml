@@ -1,12 +1,16 @@
-version: "3.8"
+version: '3'
 services:
   mqtt_server:
     container_name: mosquitto
     image: eclipse-mosquitto
     restart: always
-    network_mode: host
     ports:
-      - "1883:1883"
+      - 1883:1883
+      - 8883:8883
+    volumes:
+      - ./mqtt/mapped_dir/config/:/mosquitto/config/:ro
+      - ./mqtt/mapped_dir/log:/mosquitto/log/
+      - ./mqtt/mapped_dir/data:/mosquitto/data/
   homeassistant:
     build: .
     container_name: home-assistant
@@ -15,10 +19,9 @@ services:
       - ./hassconfig/:/config
     environment:
       - TZ=Europe/Paris
-      - DISABLE_JEMALLOC=true
+      - DISABLE_JEMALLOC=false
     restart: always
-    network_mode: host
     ports:
-      - "8123:8123"
+      - 8123:8123
     depends_on:
       - "mqtt_server"

@@ -21,7 +21,6 @@ frontend:
 config:
 
 http:
-  server_host: 127.0.0.1
   server_port: 8123
   cors_allowed_origins:
     - https://google.com
@@ -52,16 +51,16 @@ history:
 logbook:
 
 logger:
-  default: info
+  default: debug
   logs:
     homeassistant.components.mqtt: debug
 
 mqtt:
-  broker: 127.0.0.1
+  broker: localhost
   port: 1883
   client_id: hass
-  username: sa-ha
-  password: dummy
+  username:
+  password:
   discovery: true
   discovery_prefix: homeassistant
 
@@ -96,12 +95,46 @@ switch:
     payload_on: 1
     payload_off: 0
 
+switch2:
+  - platform: mqtt
+    name: "Bedroom Switch"
+    command_topic: "homeassistant/bedroom/switch1/set"
+    state_topic: "homeassistant/bedroom/switch1/set"
+    availability_topic: "homeassistant/bedroom/switch1/availability"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    optimistic: false
+    qos: 0
+    retain: true
+
+light:
+  - platform: mqtt
+    name: "Bedroom Light"
+    command_topic: "homeassistant/bedroom/light1/set"
+    state_topic: "homeassistant/bedroom/light1/set"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    retain: true
+
 mysensors:
   gateways:
     - device: mqtt
       topic_in_prefix: 'mysensors-out'
       topic_out_prefix: 'mysensors-in'
   version: 2.0
+
+
+device_tracker:
+  - platform: owntracks
+    max_gps_accuracy: 200
+    waypoints: true
+    mqtt_topic: "owntracks/#"
 
 # Text to speech
 tts:
