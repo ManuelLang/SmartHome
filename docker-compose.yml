@@ -1,27 +1,33 @@
 version: '3'
 services:
-  mqtt_server:
-    container_name: mosquitto
-    image: eclipse-mosquitto
-    restart: always
-    ports:
-      - 1883:1883
-      - 8883:8883
-    volumes:
-      - ./mqtt/mapped_dir/config/:/mosquitto/config/:ro
-      - ./mqtt/mapped_dir/log:/mosquitto/log/
-      - ./mqtt/mapped_dir/data:/mosquitto/data/
+#  mqtt_server:
+#    container_name: mosquitto
+#    image: eclipse-mosquitto
+#    restart: always
+#    ports:
+#      - 1883:1883
+#      - 8883:8883
+#    volumes:
+#      - ./mqtt/mapped_dir/config/:/mosquitto/config/:ro
+#      - ./mqtt/mapped_dir/log:/mosquitto/log/
+#      - ./mqtt/mapped_dir/data:/mosquitto/data/
+#    network_mode: host
   homeassistant:
     build: .
     container_name: home-assistant
     image: homeassistant/home-assistant:stable
     volumes:
-      - ./hassconfig/:/config
+      - ./hassconfig/empty_config/:/config
     environment:
       - TZ=Europe/Paris
       - DISABLE_JEMALLOC=false
     restart: always
+    privileged: true
     ports:
       - 8123:8123
-    depends_on:
-      - "mqtt_server"
+      - 443:443
+#    depends_on:
+#      - "mqtt_server"
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+#    network_mode: host
